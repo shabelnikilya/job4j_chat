@@ -1,14 +1,15 @@
 package ru.job4j.service;
 
 import ru.job4j.model.Room;
+import ru.job4j.repository.RoomRepository;
 
 import java.util.Optional;
 
 @org.springframework.stereotype.Service
 public class RoomService implements Service<Room> {
-    private final RoomService roomRepository;
+    private final RoomRepository roomRepository;
 
-    public RoomService(RoomService roomRepository) {
+    public RoomService(RoomRepository roomRepository) {
         this.roomRepository = roomRepository;
     }
 
