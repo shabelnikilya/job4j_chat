@@ -17,9 +17,17 @@ public class Person {
     @Enumerated(EnumType.STRING)
     private Role role;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date registration;
+    private Date registration = new Date(System.currentTimeMillis());
 
     public Person() {
+    }
+
+    public Person(String name, String surname, String login, String password, Role role) {
+        this.name = name;
+        this.surname = surname;
+        this.login = login;
+        this.password = password;
+        this.role = role;
     }
 
     public Person(String name, String surname, String login, String password, Role role, Date registration) {
