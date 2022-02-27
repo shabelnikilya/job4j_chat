@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 import ru.job4j.model.Message;
+import ru.job4j.model.Person;
 import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 import ru.job4j.service.Service;
@@ -48,6 +49,7 @@ public class RoomController {
 
     @PostMapping("/")
     public ResponseEntity<Room> create(@RequestBody Room room) {
+        validPerson(room);
         return new ResponseEntity<>(
                 this.service.save(room),
                 HttpStatus.CREATED
@@ -56,6 +58,7 @@ public class RoomController {
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Room room) {
+        validPerson(room);
         this.service.save(room);
         return ResponseEntity.ok().build();
     }
@@ -78,6 +81,7 @@ public class RoomController {
 
     @PostMapping("/message")
     public ResponseEntity<Message> create(@RequestBody Message message) {
+        MessageController.validMessage(message);
         Message rsl = rest.postForObject(API, message, Message.class);
         return new ResponseEntity<>(
                 rsl,
@@ -87,6 +91,7 @@ public class RoomController {
 
     @PutMapping("/message")
     public ResponseEntity<Void> update(@RequestBody Message message) {
+        MessageController.validMessage(message);
         rest.put(API, message);
         return ResponseEntity.ok().build();
     }
@@ -95,5 +100,11 @@ public class RoomController {
     public ResponseEntity<Void> deleteMessage(@PathVariable int id) {
         rest.delete(API_ID, id);
         return ResponseEntity.ok().build();
+    }
+
+    public static void validPerson(Room room) {
+        if (room == null || room.getName() == null ||  room.getPassword() == null) {
+            throw new NullPointerException("Body of http request is empty or parameters is null(room controller)");
+        }
     }
 }

@@ -20,6 +20,7 @@ public class UserController {
 
     @PostMapping("/register")
     public void signUp(@RequestBody Person person) {
+        PersonController.validPerson(person);
         person.setPassword(encoder.encode(person.getPassword()));
         personService.save(person);
     }

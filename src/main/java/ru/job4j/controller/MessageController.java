@@ -40,6 +40,7 @@ public class MessageController {
 
     @PostMapping("/")
     public ResponseEntity<Message> create(@RequestBody Message message) {
+        validMessage(message);
         return new ResponseEntity<>(
                 this.service.save(message),
                 HttpStatus.CREATED
@@ -48,6 +49,7 @@ public class MessageController {
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Message message) {
+        validMessage(message);
         this.service.save(message);
         return ResponseEntity.ok().build();
     }
@@ -58,5 +60,11 @@ public class MessageController {
         message.setId(id);
         this.service.delete(message);
         return ResponseEntity.ok().build();
+    }
+
+    public static void validMessage(Message message) {
+        if (message == null || message.getText() == null) {
+            throw new NullPointerException("Body of http request is empty or text is empty(message controller)");
+        }
     }
 }

@@ -47,4 +47,8 @@ public class PersonService implements Service<Person>, UserDetailsService {
         }
         return new User(user.getLogin(), user.getPassword(), emptyList());
     }
+
+    public Person findByLogin(Person person) {
+        return personRepository.findByLogin(person.getLogin());
+    }
 }
