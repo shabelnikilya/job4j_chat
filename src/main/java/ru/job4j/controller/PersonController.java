@@ -16,8 +16,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 @RestController
 @RequestMapping("/person")
@@ -32,10 +30,10 @@ public class PersonController {
     }
 
     @GetMapping("/")
-    public List<Person> findAll() {
-        return StreamSupport.stream(
-                service.findAll().spliterator(), false
-        ).collect(Collectors.toList());
+    public ResponseEntity<List<Person>> findAll() {
+        return new ResponseEntity<List<Person>>(
+                (List) service.findAll(), HttpStatus.OK
+        );
     }
 
     @GetMapping("/{id}")
