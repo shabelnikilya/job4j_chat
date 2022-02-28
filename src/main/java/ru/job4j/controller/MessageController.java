@@ -3,12 +3,18 @@ package ru.job4j.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Message;
 import ru.job4j.model.Person;
 import ru.job4j.service.MessageService;
+import ru.job4j.service.PersonService;
 import ru.job4j.service.Service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -25,7 +31,7 @@ public class MessageController {
     @GetMapping("/")
     public List<Message> findAll() {
         return StreamSupport.stream(
-                service.findAll().spliterator(), false
+                this.service.findAll().spliterator(), false
         ).collect(Collectors.toList());
     }
 
@@ -52,6 +58,11 @@ public class MessageController {
         validMessage(message);
         this.service.save(message);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public Message partUpdate(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+        return this.service.partUpdate(message);
     }
 
     @DeleteMapping("/{id}")

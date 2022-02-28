@@ -1,12 +1,18 @@
 package ru.job4j.service;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.model.Person;
 import ru.job4j.repository.PersonRepository;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static java.util.Collections.emptyList;
@@ -46,6 +52,18 @@ public class PersonService implements Service<Person>, UserDetailsService {
             throw new UsernameNotFoundException(s);
         }
         return new User(user.getLogin(), user.getPassword(), emptyList());
+    }
+
+    @Override
+    public Person partUpdate(Person person) throws InvocationTargetException, IllegalAccessException {
+        Person currentPerson = this.findById(person.getId())
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND)
+                );
+        Map<String, Method> namePerMethod = loadMethod(currentPerson, new HashMap<>());
+        updateFields(namePerMethod, person, currentPerson);
+        this.save(person);
+        return currentPerson;
     }
 
     public Person findByLogin(Person person) {

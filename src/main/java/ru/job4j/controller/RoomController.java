@@ -12,6 +12,7 @@ import ru.job4j.model.Room;
 import ru.job4j.service.RoomService;
 import ru.job4j.service.Service;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -60,6 +61,11 @@ public class RoomController {
         validPerson(room);
         this.service.save(room);
         return ResponseEntity.ok().build();
+    }
+
+    @PatchMapping("/")
+    public Room partUpdate(@RequestBody Room room) throws InvocationTargetException, IllegalAccessException {
+        return this.service.partUpdate(room);
     }
 
     @DeleteMapping("/{id}")
