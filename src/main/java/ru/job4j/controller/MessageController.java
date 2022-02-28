@@ -2,23 +2,22 @@ package ru.job4j.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
+import ru.job4j.marker.Operation;
 import ru.job4j.model.Message;
-import ru.job4j.model.Person;
 import ru.job4j.service.MessageService;
-import ru.job4j.service.PersonService;
 import ru.job4j.service.Service;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+@Validated
 @RestController
 @RequestMapping("/message")
 public class MessageController {
@@ -36,7 +35,7 @@ public class MessageController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Message> findById(@PathVariable int id) {
+    public ResponseEntity<Message> findById(@PathVariable @Min(1) int id) {
         Optional<Message> message = this.service.findById(id);
         return new ResponseEntity<>(
                 message.orElse(new Message()),
@@ -45,7 +44,8 @@ public class MessageController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Message> create(@RequestBody Message message) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Message> create(@Valid @RequestBody Message message) {
         validMessage(message);
         return new ResponseEntity<>(
                 this.service.save(message),
@@ -54,19 +54,21 @@ public class MessageController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Message message) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Message message) {
         validMessage(message);
         this.service.save(message);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/")
-    public Message partUpdate(@RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
+    @Validated(Operation.OnCreate.class)
+    public Message partUpdate(@Valid @RequestBody Message message) throws InvocationTargetException, IllegalAccessException {
         return this.service.partUpdate(message);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Void> delete(@PathVariable @Min(1) int id) {
         Message message = new Message();
         message.setId(id);
         this.service.delete(message);

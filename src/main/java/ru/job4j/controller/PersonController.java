@@ -5,20 +5,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.job4j.model.Message;
+import ru.job4j.marker.Operation;
 import ru.job4j.model.Person;
 import ru.job4j.service.PersonService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
+@Validated
 @RestController
 @RequestMapping("/person")
 public class PersonController {
@@ -39,7 +43,7 @@ public class PersonController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Person> findById(@PathVariable int id) {
+    public ResponseEntity<Person> findById(@PathVariable @Min(1) int id) {
         Optional<Person> person = this.service.findById(id);
         if (person.isEmpty()) {
             new ResponseStatusException(HttpStatus.NOT_FOUND, "person not find. Please check id");
@@ -50,7 +54,8 @@ public class PersonController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
+    @Validated(Operation.OnCreate.class)
+    public ResponseEntity<Person> create(@Valid @RequestBody Person person) {
         validPerson(person);
         if (service.findByLogin(person) != null) {
             throw new IllegalArgumentException("This login already exists");
@@ -62,19 +67,21 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
+    @Validated(Operation.OnUpdate.class)
+    public ResponseEntity<Void> update(@Valid @RequestBody Person person) {
         validPerson(person);
         this.service.save(person);
         return ResponseEntity.ok().build();
     }
 
     @PatchMapping("/")
-    public Person partUpdate(@RequestBody Person person) throws InvocationTargetException, IllegalAccessException {
+    @Validated(Operation.OnUpdate.class)
+    public Person partUpdate(@Valid @RequestBody Person person) throws InvocationTargetException, IllegalAccessException {
         return this.service.partUpdate(person);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<Void> delete(@PathVariable @Min(1) int id) {
         Person person = new Person();
         person.setId(id);
         this.service.delete(person);

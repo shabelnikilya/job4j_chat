@@ -1,15 +1,23 @@
 package ru.job4j.model;
 
+import ru.job4j.marker.Operation;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.*;
 
 @Entity
 @Table(name = "rooms")
 public class Room {
+    @NotNull(message = "Id person is null", groups = {
+            Operation.OnUpdate.class, Operation.OnDelete.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotNull(message = "The room's name is empty")
     private String name;
+    @NotNull(message = "The room's password is empty")
     private String password;
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "rooms_persons", joinColumns = {

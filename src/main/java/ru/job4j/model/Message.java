@@ -1,21 +1,30 @@
 package ru.job4j.model;
 
+import ru.job4j.marker.Operation;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Objects;
 
 @Entity
 @Table(name = "messages")
 public class Message {
+    @NotNull(message = "Id person is null", groups = {
+            Operation.OnUpdate.class, Operation.OnDelete.class
+    })
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
+    @NotBlank(message = "Text of message is null")
     private String text;
+    @NotNull(message = "person if message is null")
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "persons_id")
     private Person person;
     @Temporal(TemporalType.TIMESTAMP)
-    private Date created;
+    private Date created = new Date(System.currentTimeMillis());
 
     public Message() {
     }

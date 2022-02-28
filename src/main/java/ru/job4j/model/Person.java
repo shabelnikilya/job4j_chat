@@ -1,6 +1,10 @@
 package ru.job4j.model;
 
+import dev.fuxing.hibernate.ValidEnum;
+import ru.job4j.marker.Operation;
+
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.Objects;
 
@@ -9,11 +13,19 @@ import java.util.Objects;
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Id person is null", groups = {
+            Operation.OnUpdate.class, Operation.OnDelete.class
+    })
     private int id;
+    @NotNull(message = "The person's name is empty")
     private String name;
+    @NotNull(message = "The person's surname is empty")
     private String surname;
+    @NotNull(message = "The person's login is empty")
     private String login;
+    @NotNull(message = "The person's password is empty")
     private String password;
+    @ValidEnum
     @Enumerated(EnumType.STRING)
     private Role role;
     @Temporal(TemporalType.TIMESTAMP)
